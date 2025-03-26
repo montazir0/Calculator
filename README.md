@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Calculator</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .calculator {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .display {
+            margin-bottom: 15px;
+        }
+        .display input {
+            width: 100%;
+            height: 50px;
+            background-color: #222;
+            color: #fff;
+            border: none;
+            text-align: right;
+            padding: 0 10px;
+            font-size: 24px;
+            border-radius: 5px;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        button {
+            padding: 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button.number {
+            background-color: #444;
+            color: #fff;
+        }
+        button.operator {
+            background-color: #ff9500;
+            color: #fff;
+        }
+        button.clear {
+            background-color: #ff3b30;
+            color: #fff;
+            grid-column: span 2;
+        }
+        button.equal {
+            background-color: #34c759;
+            color: #fff;
+            grid-column: span 2;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="display">
+            <input type="text" id="expression" disabled>
+            <input type="text" id="result" disabled>
+        </div>
+        <div class="buttons">
+            <button class="clear" onclick="clearAll()">C</button>
+            <button class="operator" onclick="setOperation('±')">±</button>
+            <button class="operator" onclick="setOperation('%')">%</button>
+            <button class="operator" onclick="setOperation('/')">/</button>
+            
+            <button class="number" onclick="appendNumber('7')">7</button>
+            <button class="number" onclick="appendNumber('8')">8</button>
+            <button class="number" onclick="appendNumber('9')">9</button>
+            <button class="operator" onclick="setOperation('*')">*</button>
+            
+            <button class="number" onclick="appendNumber('4')">4</button>
+            <button class="number" onclick="appendNumber('5')">5</button>
+            <button class="number" onclick="appendNumber('6')">6</button>
+            <button class="operator" onclick="setOperation('-')">-</button>
+            
+            <button class="number" onclick="appendNumber('1')">1</button>
+            <button class="number" onclick="appendNumber('2')">2</button>
+            <button class="number" onclick="appendNumber('3')">3</button>
+            <button class="operator" onclick="setOperation('+')">+</button>
+            
+            <button class="number" onclick="appendNumber('0')">0</button>
+            <button class="number" onclick="appendDecimal()">.</button>
+            <button class="equal" onclick="calculate()">=</button>
+            <button class="operator" onclick="backspace()">←</button>
+        </div>
+    </div>
+
+    <script>
+        let num1 = 0;
+        let num2 = 0;
+        let op = null;
+        let currentInput = '';
+        
+        function updateDisplay() {
+            document.getElementById('result').value = currentInput;
+        }
+        
+        function appendNumber(number) {
+            currentInput += number;
+            updateDisplay();
+        }
+        
+        function appendDecimal() {
+            if (!currentInput.includes('.')) {
+                currentInput += '.';
+                updateDisplay();
+            }
+        }
+        
+        function setOperation(operator) {
+            if (currentInput === '') return;
+            
+            if (op !== null) {
+                calculate();
+            }
+            
+            num1 = parseFloat(currentInput);
+            op = operator;
+            document.getElementById('expression').value += currentInput + ' ' + operator + ' ';
+            currentInput = '';
+        }
+        
+        function calculate() {
+            if (op === null || currentInput === '') return;
+            
+            num2 = parseFloat(currentInput);
+            let result = 0;
+            
+            switch(op) {
+                case '+':
+                    result = num1 + num2;
+                    break;
+                case '-':
+                    result = num1 - num2;
+                    break;
+                case '*':
+                    result = num1 * num2;
+                    break;
+                case '/':
+                    result = num1 / num2;
+                    if (num2 === 0) {
+                        alert('Division by zero!');
+                        clearAll();
+                        return;
+                    }
+                    break;
+                case '%':
+                    result = num1 % num2;
+                    break;
+                case '±':
+                    result = -num1;
+                    break;
+            }
+            
+            currentInput = result.toString();
+            document.getElementById('expression').value += num2 + ' = ';
+            updateDisplay();
+            op = null;
+            num1 = result;
+        }
+        
+        function clearAll() {
+            currentInput = '';
+            num1 = 0;
+            num2 = 0;
+            op = null;
+            document.getElementById('expression').value = '';
+            updateDisplay();
+        }
+        
+        function backspace() {
+            currentInput = currentInput.slice(0, -1);
+            updateDisplay();
+        }
+    </script>
+</body>
+</html>
